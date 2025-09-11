@@ -1,0 +1,7 @@
+{
+  "name": "lastpic-mobile",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular-standalone"
+}
