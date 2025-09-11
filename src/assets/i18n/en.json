@@ -1,0 +1,9 @@
+{
+  "LOGIN": {
+    "TITLE": "Login",
+    "USERNAME": "Username",
+    "PASSWORD": "Password",
+    "SUBMIT": "Log In",
+    "LOGIN_FAILED": "Login failed. Please try again."
+  }
+}

@@ -1,11 +1,16 @@
 import { Component } from '@angular/core';
-import { IonApp, IonRouterOutlet } from '@ionic/angular/standalone';
+import { RouterModule } from '@angular/router';
+import { IonicModule } from '@ionic/angular';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-root',
-  templateUrl: 'app.component.html',
-  imports: [IonApp, IonRouterOutlet],
+  standalone: true,
+  imports: [IonicModule, RouterModule, TranslateModule],
+  template: `<router-outlet></router-outlet>`,
 })
 export class AppComponent {
-  constructor() {}
+  constructor(private translate: TranslateService) {
+    translate.use('fr'); 
+  }
 }
