@@ -1,0 +1,96 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-button (click)="goBack()">
+        <ion-icon name="arrow-back"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Nouvelle LastPic</ion-title>
+    <ion-buttons slot="end">
+      <ion-button 
+        fill="solid" 
+        (click)="postPhoto()" 
+        [disabled]="!selectedGroupId || !selectedCategoryId || isLoading">
+        {{ isLoading ? 'Envoi...' : 'Publier' }}
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <!-- Preview de l'image -->
+  <div class="image-preview" *ngIf="imageUri">
+    <img [src]="imageUri" alt="Photo preview">
+  </div>
+
+  <!-- Formulaire -->
+  <form>
+    <!-- Sélection du groupe -->
+    <ion-item>
+      <ion-label position="stacked">Groupe *</ion-label>
+      <ion-select 
+        [(ngModel)]="selectedGroupId" 
+        (ionSelectionChange)="onGroupChange()"
+        placeholder="Choisir un groupe">
+        <ion-select-option *ngFor="let group of groups" [value]="group.id">
+          {{group.name}}
+        </ion-select-option>
+      </ion-select>
+    </ion-item>
+    
+    <ion-button 
+      expand="block" 
+      fill="clear" 
+      size="small"
+      (click)="createNewGroup()">
+      <ion-icon name="add" slot="start"></ion-icon>
+      Créer un nouveau groupe
+    </ion-button>
+
+    <!-- Sélection de la catégorie -->
+    <ion-item *ngIf="categories.length > 0">
+      <ion-label position="stacked">Catégorie *</ion-label>
+      <ion-select 
+        [(ngModel)]="selectedCategoryId"
+        placeholder="Choisir une catégorie">
+        <ion-select-option *ngFor="let category of categories" [value]="category.id">
+          {{category.name}}
+        </ion-select-option>
+      </ion-select>
+    </ion-item>
+
+    <ion-button 
+      expand="block" 
+      fill="clear" 
+      size="small"
+      (click)="createNewCategory()"
+      *ngIf="selectedGroupId">
+      <ion-icon name="add" slot="start"></ion-icon>
+      Créer une nouvelle catégorie
+    </ion-button>
+
+    <!-- Caption -->
+    <ion-item>
+      <ion-label position="stacked">Légende</ion-label>
+      <ion-textarea 
+        [(ngModel)]="caption"
+        placeholder="Ajoutez une légende à votre photo..."
+        rows="3">
+      </ion-textarea>
+    </ion-item>
+  </form>
+
+  <!-- Informations sur la durée -->
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>
+        <ion-icon name="timer-outline"></ion-icon>
+        Durée de visibilité
+      </ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <p>Votre LastPic sera visible pendant <strong>30 minutes</strong> par défaut.</p>
+      <p>Elle peut gagner du temps supplémentaire grâce aux likes !</p>
+    </ion-card-content>
+  </ion-card>
+</ion-content>
