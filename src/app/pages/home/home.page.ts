@@ -1,16 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { AfterViewInit, Component, CUSTOM_ELEMENTS_SCHEMA, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, CUSTOM_ELEMENTS_SCHEMA, ElementRef, OnDestroy, ViewChild } from '@angular/core';
 import {
-  IonAvatar,
-  IonBadge,
   IonButton,
-  IonCard,
-  IonCardContent,
-  IonCol,
-  IonContent,
-  IonGrid,
   IonIcon,
-  IonRow,
   NavController
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
@@ -38,18 +30,13 @@ import {
   sync,
   trophy,
   warning,
-  water
+  water, alertCircleOutline
 } from 'ionicons/icons';
-import { AppHeaderComponent } from 'src/app/components/app-header/app-header.component';
+import { Group } from 'src/app/models/group';
 import { User } from 'src/app/models/user';
-
-interface Story {
-  id: string;
-  username: string;
-  avatar: string;
-  hasContent: boolean;
-  contentCount: number;
-}
+import { AuthService } from 'src/app/services/authService';
+import { GroupService } from 'src/app/services/groupService';
+import { PhotoService } from 'src/app/services/photoService';
 
 @Component({
   selector: 'app-home',
@@ -58,15 +45,12 @@ interface Story {
   standalone: true,
   imports: [
     CommonModule,
-    IonContent,
     IonButton,
     IonIcon
-
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
-export class HomePage implements OnInit, OnDestroy, AfterViewInit {
-
+export class HomePage implements OnDestroy, AfterViewInit {
   @ViewChild('videoElement') videoElement!: ElementRef<HTMLVideoElement>;
 
   upcomingReminders: any[] = [];
@@ -79,99 +63,49 @@ export class HomePage implements OnInit, OnDestroy, AfterViewInit {
   userInfo: User | null = null;
   isLoading = true;
 
-  // Stories state
-  selectedStory: Story | null = null;
+  userGroups: Group[] = [];
+  selectedGroup: Group | null = null;
   cameraStream: MediaStream | null = null;
   capturedPhoto: string | null = null;
 
-  stories: Story[] = [
-    {
-      id: '1',
-      username: 'emma.johnson',
-      avatar: 'https://images.unsplash.com/photo-1494790108755-2616b612b796?w=150&h=150&fit=crop&crop=face',
-      hasContent: true,
-      contentCount: 3
-    },
-    {
-      id: '2',
-      username: 'alex.photo',
-      avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face',
-      hasContent: false,
-      contentCount: 0
-    },
-    {
-      id: '3',
-      username: 'sarah.travels',
-      avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face',
-      hasContent: true,
-      contentCount: 1
-    },
-    {
-      id: '4',
-      username: 'mike_fitness',
-      avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face',
-      hasContent: false,
-      contentCount: 0
-    },
-    {
-      id: '5',
-      username: 'luna.art',
-      avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&h=150&fit=crop&crop=face',
-      hasContent: true,
-      contentCount: 5
-    },
-    {
-      id: '6',
-      username: 'david.music',
-      avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&h=150&fit=crop&crop=face',
-      hasContent: false,
-      contentCount: 0
-    },
-    {
-      id: '7',
-      username: 'zoe.food',
-      avatar: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=150&h=150&fit=crop&crop=face',
-      hasContent: true,
-      contentCount: 2
-    },
-    {
-      id: '8',
-      username: 'tom.adventure',
-      avatar: 'https://images.unsplash.com/photo-1599566150163-29194dcaad36?w=150&h=150&fit=crop&crop=face',
-      hasContent: false,
-      contentCount: 0
-    }
-  ];
-
   constructor(
     private navCtrl: NavController,
+    private groupService: GroupService,
+    private photoService: PhotoService,
+    private authService: AuthService
   ) {
-    addIcons({
-      carSport, location, heart, diamond,
-      speedometer, calendar, flash, water, carSportOutline,
-      add, newspaper, chatbubbles, construct, person, sync,
-      car, settings, cog, trophy, warning, refresh, camera,
-      close, images
-    });
+    addIcons({ alertCircleOutline, camera, close, refresh, add, images, carSport, location, heart, diamond, speedometer, calendar, flash, water, carSportOutline, newspaper, chatbubbles, construct, person, sync, car, settings, cog, trophy, warning });
   }
-
-  ngOnInit(): void { }
 
   ngAfterViewInit(): void { }
 
-  ionViewWillEnter() { }
+  ionViewWillEnter() {
+    this.loadUserGroups();
+  }
 
   ngOnDestroy(): void {
     this.closeCamera();
   }
 
-  // Sélectionner une story
-  selectStory(story: any) {
-    this.selectedStory = story;
+  async loadUserGroups() {
+    try {
+      const currentUser = await this.authService.getCurrentUser();
+      if (currentUser?.id) {
+        this.userGroups = await this.groupService.getMyGroups();
+        console.log('Groupes chargés:', this.userGroups);
+      }
+    } catch (error) {
+      console.error('Erreur lors du chargement des groupes:', error);
+    }
+  }
+
+  // Sélectionner un groupe
+  selectGroup(group: Group) {
+    this.selectedGroup = group;
 
     // Scroll simple vers l'élément sélectionné
     setTimeout(() => {
-      const selected = document.querySelector('.story-item.selected');
+      const selected = document.querySelector('.group-item.selected');
       if (selected) {
         selected.scrollIntoView({
           behavior: 'smooth',
@@ -180,10 +114,29 @@ export class HomePage implements OnInit, OnDestroy, AfterViewInit {
       }
     }, 100);
   }
-  
+
+  // Obtenir l'avatar du groupe (dernière photo ou avatar par défaut)
+  getGroupAvatar(group: Group): string {
+    if (group.photos && group.photos.length > 0) {
+      // Trouve la dernière photo active
+      const activePhotos = group.photos
+        .filter(p => p.isActive)
+        .sort((a, b) => {
+          const dateA = a.postedAt ? new Date(a.postedAt).getTime() : 0;
+          const dateB = b.postedAt ? new Date(b.postedAt).getTime() : 0;
+          return dateB - dateA;
+        });
+
+      if (activePhotos.length > 0) {
+        return activePhotos[0].imageUrl;
+      }
+    }
+    return '/assets/icon/default-group-avatar.png';
+  }
+
   // Ouvrir la caméra
   async openCamera() {
-    if (!this.selectedStory) return;
+    if (!this.selectedGroup) return;
 
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
@@ -207,6 +160,10 @@ export class HomePage implements OnInit, OnDestroy, AfterViewInit {
       console.error('Erreur caméra:', error);
       alert('Impossible d\'accéder à la caméra. Vérifiez les permissions.');
     }
+  }
+
+  isGroupViewed(group: any): boolean {
+    return this.getPhotoCount(group) === 0;
   }
 
   // Fermer la caméra
@@ -242,32 +199,71 @@ export class HomePage implements OnInit, OnDestroy, AfterViewInit {
     this.openCamera();
   }
 
-  // Ajouter la photo à la story
-  addToStory() {
-    if (!this.selectedStory || !this.capturedPhoto) return;
+  // Ajouter la photo au groupe
+  async addToGroup() {
+    if (!this.selectedGroup || !this.capturedPhoto) return;
 
-    console.log(`Ajout de la photo à: ${this.selectedStory.username}`);
+    try {
+      const currentUser = await this.authService.getCurrentUser();
+      if (!currentUser?.id) {
+        alert('Utilisateur non connecté');
+        return;
+      }
 
-    // Mettre à jour la story
-    this.selectedStory.hasContent = true;
-    this.selectedStory.contentCount++;
+      // Convertir base64 en blob pour l'upload
+      const response = await fetch(this.capturedPhoto);
+      const blob = await response.blob();
 
-    // Reset
-    this.capturedPhoto = null;
+      // Générer un nom de fichier unique
+      const filename = `group_${this.selectedGroup.id}_${Date.now()}.jpg`;
 
-    // Feedback
-    this.showSuccessMessage();
+      // Ici tu peux implémenter l'upload du fichier selon ton backend
+      // const uploadedFilePath = await this.uploadFile(blob, filename);
+
+      // Pour l'instant, on utilise le base64 comme filePath (à adapter)
+      const newPhoto = await this.photoService.postPhoto(
+        currentUser.id,
+        filename,
+        this.capturedPhoto, // En réalité ce serait uploadedFilePath
+        `Photo ajoutée au groupe ${this.selectedGroup.name}`
+      );
+
+      console.log(`Photo ajoutée au groupe: ${this.selectedGroup.name}`, newPhoto);
+
+      // Refresh les groupes pour mettre à jour l'UI
+      await this.loadUserGroups();
+
+      // Reset
+      this.capturedPhoto = null;
+      this.selectedGroup = null;
+
+      // Feedback
+      this.showSuccessMessage();
+
+    } catch (error) {
+      console.error('Erreur lors de l\'ajout de la photo:', error);
+      alert('Erreur lors de l\'ajout de la photo');
+    }
   }
 
   private showSuccessMessage() {
-    console.log('✅ Photo ajoutée à la story avec succès!');
+    console.log('✅ Photo ajoutée au groupe avec succès!');
     // Ici tu peux ajouter un toast Ionic
     // const toast = await this.toastController.create({
-    //   message: '📸 Photo ajoutée à la story!',
+    //   message: '📸 Photo ajoutée au groupe!',
     //   duration: 2000,
     //   color: 'success'
     // });
     // toast.present();
+  }
+
+  // Méthodes utilitaires pour l'affichage
+  hasPhotos(group: Group): boolean {
+    return group.photos ? group.photos.length > 0 : false;
+  }
+
+  getPhotoCount(group: Group): number {
+    return group.photos ? group.photos.filter(p => p.isActive).length : 0;
   }
 
   // Méthodes existantes héritées

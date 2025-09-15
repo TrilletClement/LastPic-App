@@ -1,61 +1,59 @@
-<ion-content [fullscreen]="true" class="simple-stories-content">
-  <!-- Stories Row -->
-  <div class="stories-container">
-    <div class="stories-scroll" [class.has-selection]="selectedStory">
-      
-      <!-- Stories normales -->
-      <div class="story-item" 
-           *ngFor="let story of stories" 
-           [class.selected]="selectedStory?.id === story.id"
-           [class.centered]="selectedStory?.id === story.id"
-           (click)="selectStory(story)">
-        <div class="story-avatar" [class.has-content]="story.hasContent">
-          <img [src]="story.avatar" [alt]="story.username">
+<ion-content class="simple-groups-content">
+  <!-- Conteneur des groupes -->
+  <div class="groups-container">
+    <div class="groups-scroll" [class.has-selection]="selectedGroup">
+      <!-- Aucun groupe -->
+      <div class="no-groups" *ngIf="!userGroups || userGroups.length === 0">
+        <ion-icon name="alert-circle-outline"></ion-icon>
+        <p>Aucun groupe disponible pour le moment</p>
+      </div>
+      <!-- Groupes de l'utilisateur -->
+      <div class="story-item"
+           *ngFor="let group of userGroups"
+           [class.selected]="selectedGroup?.id === group.id"
+           [class.viewed]="isGroupViewed(group)"
+           [class.has-content]="hasPhotos(group)"
+           (click)="selectGroup(group)">
+        <div class="story-avatar">
+          <img [src]="getGroupAvatar(group)" [alt]="group.name">
           <div class="story-ring"></div>
-          
-          <!-- Compteur de contenu -->
-          <div class="content-count" *ngIf="story.contentCount > 0">
-            {{ story.contentCount }}
+          <div class="content-count" *ngIf="getPhotoCount(group) > 0">
+            {{ getPhotoCount(group) }}
           </div>
-          
-          <!-- Indicateur d'ajout -->
-          <div class="add-indicator" *ngIf="selectedStory?.id === story.id">
+          <div class="add-indicator" *ngIf="selectedGroup?.id === group.id">
             <ion-icon name="camera"></ion-icon>
           </div>
+          <div class="member-count" *ngIf="group.memberCount > 1">
+            {{ group.memberCount }}
+          </div>
         </div>
-        <span class="story-username">{{ story.username }}</span>
+        <span class="story-username">{{ group.name }}</span>
       </div>
     </div>
   </div>
 
-  <!-- Zone d'ajout de photo (quand une story est sélectionnée) -->
-  <div class="photo-add-section" *ngIf="selectedStory">
+  <!-- Zone d'ajout de photo -->
+  <div class="photo-add-section" *ngIf="selectedGroup">
     <div class="selected-story-info">
-      <h3>Ajouter à {{ selectedStory.username }}</h3>
+      <h3>Ajouter à {{ selectedGroup.name }}</h3>
+      <p *ngIf="selectedGroup.description">{{ selectedGroup.description }}</p>
+      <p *ngIf="!selectedGroup.description">{{ selectedGroup.memberCount }} membre(s)</p>
     </div>
-    
     <div class="camera-area" (click)="openCamera()">
       <div class="camera-placeholder" *ngIf="!cameraStream && !capturedPhoto">
         <ion-icon name="camera"></ion-icon>
         <p>Touchez pour prendre une photo</p>
       </div>
-      
-      <!-- Stream caméra -->
-      <video #videoElement 
-             class="camera-stream" 
-             [style.display]="cameraStream ? 'block' : 'none'" 
-             autoplay 
-             playsinline>
+      <video #videoElement
+             class="camera-stream"
+             [style.display]="cameraStream ? 'block' : 'none'"
+             autoplay playsinline>
       </video>
-      
-      <!-- Photo capturée -->
-      <img [src]="capturedPhoto" 
-           *ngIf="capturedPhoto && !cameraStream" 
-           class="captured-photo" 
+      <img [src]="capturedPhoto"
+           *ngIf="capturedPhoto && !cameraStream"
+           class="captured-photo"
            alt="Photo capturée">
     </div>
-
-    <!-- Contrôles caméra -->
     <div class="camera-controls" *ngIf="cameraStream">
       <ion-button class="capture-btn" (click)="capturePhoto()" fill="clear">
         <div class="capture-circle"></div>
@@ -64,24 +62,22 @@
         <ion-icon name="close"></ion-icon>
       </ion-button>
     </div>
-
-    <!-- Actions photo -->
     <div class="photo-actions" *ngIf="capturedPhoto && !cameraStream">
       <ion-button (click)="retakePhoto()" fill="outline" color="medium">
         <ion-icon name="refresh"></ion-icon>
         Reprendre
       </ion-button>
-      <ion-button (click)="addToStory()" fill="solid" color="primary">
+      <ion-button (click)="addToGroup()" fill="solid" color="primary">
         <ion-icon name="add"></ion-icon>
-        Ajouter à la story
+        Ajouter au groupe
       </ion-button>
     </div>
   </div>
 
-  <!-- Message quand aucune story sélectionnée -->
-  <div class="no-selection" *ngIf="!selectedStory">
+  <!-- Aucun groupe sélectionné -->
+  <div class="no-selection" *ngIf="!selectedGroup && userGroups.length > 0">
     <ion-icon name="images"></ion-icon>
-    <h3>Sélectionnez une story</h3>
-    <p>Choisissez une story en haut pour commencer à ajouter du contenu</p>
+    <h3>Sélectionnez un groupe</h3>
+    <p>Choisissez un groupe en haut pour commencer à ajouter une photo</p>
   </div>
 </ion-content>

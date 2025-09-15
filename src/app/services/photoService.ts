@@ -89,4 +89,15 @@ export class PhotoService {
   isPhotoActive(photo: Photo): boolean {
     return photo.isActive && !photo.isExpired;
   }
+
+  async uploadPhotoToGroup(formData: FormData): Promise<Photo> {
+  const response = await firstValueFrom(
+    this.api.post<any>('/photos/upload/group', formData, {
+      headers: {
+        ...this.authService.getAuthHeaders(),
+      }
+    })
+  );
+  return new Photo(response);
+}
 }
