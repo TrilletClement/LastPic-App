@@ -22,43 +22,35 @@
       scrollbar-width: none;
       -ms-overflow-style: none;
       justify-content: flex-start; /* Alignement à gauche */
-      min-height: 100px; /* Évite la coupure */
+      min-height: 120px; /* Augmenté pour faire place au titre */
 
       &::-webkit-scrollbar {
         display: none;
       }
 
-      /* Effet de mise en avant du groupe sélectionné */
+      /* Effet de mise en avant du groupe sélectionné - SIMPLIFIÉ */
       &.has-selection {
         .story-item {
           transition: all 0.3s ease;
 
           &:not(.selected) {
-            transform: scale(0.85);
-            opacity: 0.5;
+            opacity: 0.6;
           }
 
           &.selected {
-            transform: scale(1.1);
             opacity: 1;
 
             .story-avatar .story-ring {
-              background: linear-gradient(45deg,
-                #f09433 0%,
-                #e6683c 25%,
-                #dc2743 50%,
-                #cc2366 75%,
-                #bc1888 100%);
-              animation: pulse 2s infinite;
-              box-shadow: 0 0 15px rgba(255, 107, 157, 0.5);
+              border: 3px solid #007acc;
+              box-shadow: 0 0 0 2px rgba(0, 122, 204, 0.2);
             }
 
             .story-username {
               font-weight: 600;
-              background: linear-gradient(45deg, #007acc, #0056b3);
-              -webkit-background-clip: text;
-              background-clip: text;
-              -webkit-text-fill-color: transparent;
+              color: #007acc;
+              background: rgba(0, 122, 204, 0.1);
+              padding: 4px 8px;
+              border-radius: 12px;
             }
           }
         }
@@ -69,29 +61,32 @@
         display: flex;
         flex-direction: column;
         align-items: center;
-        justify-content: center;
+        justify-content: flex-start;
         flex-shrink: 0;
-        width: 80px; /* Largeur fixe */
-        height: 100px; /* Hauteur fixe */
+        width: 90px; /* Largeur augmentée */
+        height: 120px; /* Hauteur augmentée */
         margin: 0;
-        padding: 0 4px;
+        padding: 4px;
         cursor: pointer;
         transition: all 0.3s ease;
 
         &:hover:not(.selected) {
-          transform: scale(1.05);
+          transform: translateY(-2px);
+          
+          .story-avatar .story-ring {
+            border: 2px solid #007acc;
+          }
         }
 
         &:active:not(.selected) {
-          transform: scale(0.95);
+          transform: scale(0.98);
         }
 
         .story-avatar {
           position: relative;
-          width: 64px;
-          height: 64px;
-          margin-bottom: 6px;
-          box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+          width: 70px;
+          height: 70px;
+          margin-bottom: 8px;
           border-radius: 50%;
 
           img {
@@ -106,32 +101,33 @@
 
           .story-ring {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 80px;
-            height: 80px;
+            top: -3px;
+            left: -3px;
+            width: 76px;
+            height: 76px;
             border-radius: 50%;
-            background: #c7c7cc;
+            background: transparent;
+            border: 2px solid #e0e0e0;
             z-index: 1;
             transition: all 0.3s ease;
-            border-bottom: 2px solid rgba(0, 0, 0, 0.1);
           }
 
           /* État "vu" */
           &.viewed .story-ring {
-            background: #e0e0e0;
+            border-color: #c7c7cc;
           }
 
           /* État "non vu" avec contenu */
           &.has-content:not(.viewed) .story-ring {
-            background: linear-gradient(45deg, #4CAF50 0%, #45a049 100%);
+            border-color: #4CAF50;
+            border-width: 3px;
           }
 
           /* Badge de nombre de photos */
           .content-count {
             position: absolute;
-            top: -5px;
-            right: -5px;
+            top: -8px;
+            right: -8px;
             background: #ff4444;
             color: white;
             border-radius: 50%;
@@ -144,13 +140,14 @@
             font-weight: bold;
             z-index: 3;
             border: 2px solid white;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
           }
 
           /* Indicateur d'ajout (caméra) */
           .add-indicator {
             position: absolute;
-            bottom: -5px;
-            right: -5px;
+            bottom: -8px;
+            right: -8px;
             background: #007acc;
             color: white;
             border-radius: 50%;
@@ -161,7 +158,7 @@
             justify-content: center;
             z-index: 3;
             border: 2px solid white;
-            animation: bounce 1.5s infinite;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 
             ion-icon {
               font-size: 16px;
@@ -171,8 +168,8 @@
           /* Badge de nombre de membres */
           .member-count {
             position: absolute;
-            top: -5px;
-            left: -5px;
+            top: -8px;
+            left: -8px;
             background: #007acc;
             color: white;
             border-radius: 50%;
@@ -185,48 +182,73 @@
             font-weight: bold;
             z-index: 3;
             border: 2px solid white;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
           }
         }
 
         .story-username {
-          font-size: 12px;
+          font-size: 13px;
           color: #262626;
           text-align: center;
-          max-width: 80px;
+          width: 86px; /* Largeur fixe pour éviter les débordements */
           overflow: hidden;
           text-overflow: ellipsis;
           white-space: nowrap;
           font-weight: 500;
           transition: all 0.3s ease;
+          line-height: 1.2;
+          padding: 2px 4px;
+          border-radius: 8px;
+          
+          /* Amélioration de la lisibilité */
+          text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
+          background: rgba(255, 255, 255, 0.7);
+          backdrop-filter: blur(4px);
+          border: 1px solid rgba(219, 219, 219, 0.3);
         }
       }
 
       /* Style du bouton d'ajout de groupe */
       .add-group-item {
         .story-avatar {
-          background: linear-gradient(45deg, #e0e0e0, #f0f0f0);
-          border: 2px dashed #b0b0b0;
+          background: linear-gradient(45deg, #f8f9fa, #e9ecef);
+          border: 2px dashed #adb5bd;
           display: flex;
           align-items: center;
           justify-content: center;
+          border-radius: 50%;
+
+          .story-ring {
+            display: none; /* Pas besoin de ring pour le bouton d'ajout */
+          }
 
           ion-icon[name="add"] {
             font-size: 32px;
-            color: #666;
+            color: #6c757d;
           }
         }
 
         .story-username {
-          color: #666;
+          color: #6c757d;
           font-weight: 500;
+          background: rgba(248, 249, 250, 0.9);
         }
 
         &:hover {
-          transform: scale(1.05);
+          transform: translateY(-2px);
 
           .story-avatar {
-            background: linear-gradient(45deg, #d0d0d0, #e0e0e0);
-            border-color: #888;
+            background: linear-gradient(45deg, #e9ecef, #dee2e6);
+            border-color: #6c757d;
+
+            ion-icon {
+              color: #495057;
+            }
+          }
+
+          .story-username {
+            color: #495057;
+            background: rgba(233, 236, 239, 0.9);
           }
         }
       }
@@ -240,18 +262,20 @@
     align-items: center;
     justify-content: center;
     padding: 40px 20px;
-    color: #666;
+    color: #6c757d;
     background: white;
     border-bottom: 1px solid #dbdbdb;
 
     ion-icon {
       font-size: 48px;
       margin-bottom: 12px;
+      color: #adb5bd;
     }
 
     p {
       margin: 0;
       font-size: 16px;
+      font-weight: 500;
     }
   }
 
@@ -273,7 +297,7 @@
       }
 
       p {
-        color: #666;
+        color: #6c757d;
         font-size: 16px;
         margin: 8px 0 0 0;
       }
@@ -394,7 +418,7 @@
     justify-content: center;
     text-align: center;
     padding: 60px 20px;
-    color: #666;
+    color: #6c757d;
     min-height: 400px;
     background: #000;
 
@@ -420,27 +444,64 @@
       color: #999;
     }
   }
+
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .groups-container .groups-scroll {
+      padding: 0 12px;
+      gap: 12px;
+    }
+    
+    .story-item {
+      width: 80px;
+      
+      .story-username {
+        font-size: 12px;
+        width: 76px;
+      }
+    }
+  }
+
+  @media (max-width: 480px) {
+    .groups-container .groups-scroll {
+      padding: 0 8px;
+      gap: 8px;
+    }
+    
+    .story-item {
+      width: 75px;
+      
+      .story-avatar {
+        width: 60px;
+        height: 60px;
+        
+        img {
+          width: 60px;
+          height: 60px;
+        }
+        
+        .story-ring {
+          width: 66px;
+          height: 66px;
+        }
+      }
+      
+      .story-username {
+        font-size: 11px;
+        width: 71px;
+      }
+    }
+  }
 }
 
-/* Animations */
-@keyframes pulse {
-  0%,
-  100% {
-    transform: scale(1);
+/* Animations simplifiées */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
     opacity: 1;
-  }
-  50% {
-    transform: scale(1.05);
-    opacity: 0.9;
-  }
-}
-
-@keyframes bounce {
-  0%,
-  100% {
     transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-6px);
   }
 }
