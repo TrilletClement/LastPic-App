@@ -1,21 +1,13 @@
+<app-header title="LastPic"></app-header>
 <ion-content class="simple-groups-content">
   <!-- Conteneur des groupes -->
   <div class="groups-container">
     <div class="groups-scroll" [class.has-selection]="selectedGroup">
-      <!-- Aucun groupe -->
-      <div class="no-groups" *ngIf="!userGroups || userGroups.length === 0">
-        <ion-icon name="alert-circle-outline"></ion-icon>
-        <p>Aucun groupe disponible pour le moment</p>
-      </div>
       <!-- Groupes de l'utilisateur -->
-      <div class="story-item"
-           *ngFor="let group of userGroups"
-           [class.selected]="selectedGroup?.id === group.id"
-           [class.viewed]="isGroupViewed(group)"
-           [class.has-content]="hasPhotos(group)"
-           (click)="selectGroup(group)">
+      <div class="story-item" *ngFor="let group of userGroups" [class.selected]="selectedGroup?.id === group.id"
+        [class.viewed]="isGroupViewed(group)" [class.has-content]="hasPhotos(group)" (click)="selectGroup(group)">
         <div class="story-avatar">
-          <img [src]="getGroupAvatar(group)" [alt]="group.name">
+          <img [src]="getGroupAvatar(group)" [alt]="group.name" />
           <div class="story-ring"></div>
           <div class="content-count" *ngIf="getPhotoCount(group) > 0">
             {{ getPhotoCount(group) }}
@@ -29,7 +21,21 @@
         </div>
         <span class="story-username">{{ group.name }}</span>
       </div>
+
+      <!-- Bouton pour ajouter un groupe (aligné à gauche) -->
+      <div class="story-item add-group-item" (click)="createNewGroup()">
+        <div class="story-avatar">
+          <ion-icon name="add"></ion-icon>
+        </div>
+        <span class="story-username">Nouveau</span>
+      </div>
     </div>
+  </div>
+
+  <!-- Message "Aucun groupe disponible" (en dehors du scroll) -->
+  <div class="no-groups-message" *ngIf="!userGroups || userGroups.length === 0">
+    <ion-icon name="alert-circle-outline"></ion-icon>
+    <p>Aucun groupe disponible pour le moment</p>
   </div>
 
   <!-- Zone d'ajout de photo -->
@@ -44,15 +50,9 @@
         <ion-icon name="camera"></ion-icon>
         <p>Touchez pour prendre une photo</p>
       </div>
-      <video #videoElement
-             class="camera-stream"
-             [style.display]="cameraStream ? 'block' : 'none'"
-             autoplay playsinline>
-      </video>
-      <img [src]="capturedPhoto"
-           *ngIf="capturedPhoto && !cameraStream"
-           class="captured-photo"
-           alt="Photo capturée">
+      <video #videoElement class="camera-stream" [style.display]="cameraStream ? 'block' : 'none'" autoplay
+        playsinline></video>
+      <img [src]="capturedPhoto" *ngIf="capturedPhoto && !cameraStream" class="captured-photo" alt="Photo capturée" />
     </div>
     <div class="camera-controls" *ngIf="cameraStream">
       <ion-button class="capture-btn" (click)="capturePhoto()" fill="clear">

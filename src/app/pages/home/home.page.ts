@@ -8,30 +8,19 @@ import {
 import { addIcons } from 'ionicons';
 import {
   add,
-  calendar,
-  camera,
-  car,
-  carSport,
-  carSportOutline,
-  chatbubbles,
-  close,
-  cog,
-  construct,
-  diamond,
-  flash,
-  heart,
-  images,
-  location,
-  newspaper,
-  person,
-  refresh,
-  settings,
-  speedometer,
-  sync,
-  trophy,
-  warning,
+  calendar, camera,
+  car, carSport,
+  carSportOutline, chatbubbles,
+  close, cog,
+  construct, diamond,
+  flash, heart,
+  images, location,
+  newspaper, person,
+  refresh, settings,
+  speedometer, sync, trophy, warning,
   water, alertCircleOutline
 } from 'ionicons/icons';
+import { AppHeaderComponent } from 'src/app/components/app-header/app-header.component';
 import { Group } from 'src/app/models/group';
 import { User } from 'src/app/models/user';
 import { AuthService } from 'src/app/services/authService';
@@ -46,7 +35,8 @@ import { PhotoService } from 'src/app/services/photoService';
   imports: [
     CommonModule,
     IonButton,
-    IonIcon
+    IonIcon,
+    AppHeaderComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
@@ -214,13 +204,7 @@ export class HomePage implements OnDestroy, AfterViewInit {
       const response = await fetch(this.capturedPhoto);
       const blob = await response.blob();
 
-      // Générer un nom de fichier unique
       const filename = `group_${this.selectedGroup.id}_${Date.now()}.jpg`;
-
-      // Ici tu peux implémenter l'upload du fichier selon ton backend
-      // const uploadedFilePath = await this.uploadFile(blob, filename);
-
-      // Pour l'instant, on utilise le base64 comme filePath (à adapter)
       const newPhoto = await this.photoService.postPhoto(
         currentUser.id,
         filename,
@@ -237,7 +221,6 @@ export class HomePage implements OnDestroy, AfterViewInit {
       this.capturedPhoto = null;
       this.selectedGroup = null;
 
-      // Feedback
       this.showSuccessMessage();
 
     } catch (error) {
@@ -248,18 +231,16 @@ export class HomePage implements OnDestroy, AfterViewInit {
 
   private showSuccessMessage() {
     console.log('✅ Photo ajoutée au groupe avec succès!');
-    // Ici tu peux ajouter un toast Ionic
-    // const toast = await this.toastController.create({
-    //   message: '📸 Photo ajoutée au groupe!',
-    //   duration: 2000,
-    //   color: 'success'
-    // });
-    // toast.present();
   }
 
   // Méthodes utilitaires pour l'affichage
   hasPhotos(group: Group): boolean {
     return group.photos ? group.photos.length > 0 : false;
+  }
+
+  createNewGroup() {
+    console.log("Créer un nouveau groupe");
+    this.navCtrl.navigateForward('/create-group');
   }
 
   getPhotoCount(group: Group): number {
@@ -268,14 +249,6 @@ export class HomePage implements OnDestroy, AfterViewInit {
 
   // Méthodes existantes héritées
   getInitials(): void { }
-
-  openProfile() {
-    this.navCtrl.navigateForward('/profile');
-  }
-
-  openGarage() {
-    this.navCtrl.navigateForward('tabs/garage');
-  }
 
   openVehicleDetails() { }
 

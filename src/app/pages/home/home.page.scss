@@ -2,23 +2,27 @@
   --background: #fafafa;
   background: var(--background);
 
-  /* Conteneur des groupes (stories) */
+  /* Conteneur des groupes */
   .groups-container {
+    width: 100%;
     background: white;
-    padding: 20px 0;
+    padding: 10px 0;
     border-bottom: 1px solid #dbdbdb;
     position: sticky;
     top: 0;
     z-index: 100;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 
+    /* Conteneur de défilement horizontal */
     .groups-scroll {
       display: flex;
       overflow-x: auto;
       padding: 0 20px;
-      gap: 20px;
+      gap: 16px;
       scrollbar-width: none;
       -ms-overflow-style: none;
+      justify-content: flex-start; /* Alignement à gauche */
+      min-height: 100px; /* Évite la coupure */
 
       &::-webkit-scrollbar {
         display: none;
@@ -53,18 +57,24 @@
               font-weight: 600;
               background: linear-gradient(45deg, #007acc, #0056b3);
               -webkit-background-clip: text;
+              background-clip: text;
               -webkit-text-fill-color: transparent;
             }
           }
         }
       }
 
-      /* Style de chaque "story" */
+      /* Chaque élément de groupe */
       .story-item {
         display: flex;
         flex-direction: column;
         align-items: center;
+        justify-content: center;
         flex-shrink: 0;
+        width: 80px; /* Largeur fixe */
+        height: 100px; /* Hauteur fixe */
+        margin: 0;
+        padding: 0 4px;
         cursor: pointer;
         transition: all 0.3s ease;
 
@@ -78,10 +88,10 @@
 
         .story-avatar {
           position: relative;
-          width: 80px;
-          height: 80px;
-          margin-bottom: 8px;
-          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+          width: 64px;
+          height: 64px;
+          margin-bottom: 6px;
+          box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
           border-radius: 50%;
 
           img {
@@ -190,6 +200,58 @@
           transition: all 0.3s ease;
         }
       }
+
+      /* Style du bouton d'ajout de groupe */
+      .add-group-item {
+        .story-avatar {
+          background: linear-gradient(45deg, #e0e0e0, #f0f0f0);
+          border: 2px dashed #b0b0b0;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+
+          ion-icon[name="add"] {
+            font-size: 32px;
+            color: #666;
+          }
+        }
+
+        .story-username {
+          color: #666;
+          font-weight: 500;
+        }
+
+        &:hover {
+          transform: scale(1.05);
+
+          .story-avatar {
+            background: linear-gradient(45deg, #d0d0d0, #e0e0e0);
+            border-color: #888;
+          }
+        }
+      }
+    }
+  }
+
+  /* Message "Aucun groupe disponible" */
+  .no-groups-message {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    color: #666;
+    background: white;
+    border-bottom: 1px solid #dbdbdb;
+
+    ion-icon {
+      font-size: 48px;
+      margin-bottom: 12px;
+    }
+
+    p {
+      margin: 0;
+      font-size: 16px;
     }
   }
 
@@ -362,7 +424,8 @@
 
 /* Animations */
 @keyframes pulse {
-  0%, 100% {
+  0%,
+  100% {
     transform: scale(1);
     opacity: 1;
   }
@@ -373,48 +436,11 @@
 }
 
 @keyframes bounce {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0);
   }
   50% {
     transform: translateY(-6px);
-  }
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-  .simple-groups-content {
-    .groups-container .groups-scroll {
-      padding: 0 16px;
-      gap: 16px;
-
-      .story-item .story-avatar {
-        width: 70px;
-        height: 70px;
-
-        img {
-          width: 60px;
-          height: 60px;
-        }
-
-        .story-ring {
-          width: 70px;
-          height: 70px;
-        }
-      }
-    }
-
-    .photo-add-section {
-      padding: 20px 16px;
-
-      .camera-area {
-        min-height: 250px;
-
-        .camera-stream,
-        .captured-photo {
-          height: 250px;
-        }
-      }
-    }
   }
 }
